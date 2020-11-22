@@ -1,11 +1,20 @@
-RSpec.describe Weather do
-  it 'randomly generates stormy weather' do
-    allow(subject).to receive(:rand).and_return(8)
-    expect(subject.forecast).to eq :stormy
-  end
+describe('Weather', function() {
+  it ('randomly generates stormy weather', function(){
+    
+    spyOn(Math, "random").and.returnValue(8);
+    weather = new Weather;
+    
+    expect(weather.forecast()).toEqual("stormy");
+  });
+});
 
-  it 'randomly generates sunny weather' do
-    allow(subject).to receive(:rand).and_return(2)
-    expect(subject.forecast).to eq :sunny
-  end
-end
+describe('Weather', function() {
+
+  it ('randomly generates sunny weather', function(){
+    
+    spyOn(Math, "random").and.returnValue(2);
+    weather = new Weather;
+    
+    expect(weather.forecast()).toEqual("sunny");
+  });
+});

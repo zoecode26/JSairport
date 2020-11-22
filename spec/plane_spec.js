@@ -1,114 +1,96 @@
-require 'plane'
+describe('Plane', function() {
+  describe('#land', function(){
+    it('lands plane and adds it to the planes array', function(){
+      spyOn(Math, "random").and.returnValue(2);
+      plane = new Plane;
+      airport = new Airport;
+      plane.land(airport);
+      expect(airport.planes).toContain(plane)
+    });
 
-RSpec.describe Plane do
+    it('ensures the correct plane is being landed', function(){
+      spyOn(Math, "random").and.returnValue(2);
+      airport = new Airport;
 
-  describe '#land' do
-    it 'instructs the plane to land' do
-      airport = Airport.new
-      expect(subject).to receive(:land)
-      subject.land(airport)
-    end
+      plane1 = new Plane;
+      plane2 = new Plane;
 
-    it 'adds the landed plane to the planes array' do
-      airport = Airport.new
-      allow(airport.weather).to receive(:rand).and_return(1)
-      subject.land(airport)
-      expect(airport.planes).to include(subject)
-    end
+      plane1.land(airport);
+      plane2.land(airport);
 
-    it 'ensures the correct plane is being landed' do
-      airport = Airport.new
-      allow(airport).to receive(:rand).and_return(1)
+      plane1.take_off(airport);
+      plane2.take_off(airport);
 
-      plane1 = Plane.new
-      plane2 = Plane.new
+      plane2.land(airport)
+      expect(airport.planes).toEqual([plane2]);
+    });
 
-      plane1.take_off(airport)
-      plane2.take_off(airport)
+    it("won\'t allow plane to be landed again", function(){
+      spyOn(Math, "random").and.returnValue(2);
+      airport = new Airport;
+      plane = new Plane;
+
+      plane.land(airport);
+      message = "PLANE ALREADY LANDED";
+      expect(function() { plane.land(airport) } ).toThrow(message);
+    });
+  });
+
+  describe('#take_off', function(){
+    it('allows plane to take_off and plane is removed from planes array', function(){
+      spyOn(Math, "random").and.returnValue(2);
+      airport = new Airport;
+      plane = new Plane;
+      plane.land(airport);
+      expect(airport.planes).toContain(plane);
+      plane.take_off(airport);
+      expect(airport.planes).toEqual([]);
+    });
+
+    it('ensures the correct plane is taking off', function(){
+      spyOn(Math, "random").and.returnValue(2);
+      airport = new Airport;
       
-      plane2.land(airport)
-      expect(airport.planes).to eq [plane2]
-    end
+      plane1 = new Plane;
+      plane2 = new Plane;
 
-    it 'confirms to user that plane has landed' do
-      airport = Airport.new
-      allow(airport).to receive(:rand).and_return(1)
-      message = "PLANE LANDED SUCCESSFULLY\n"
-      expect { subject.land(airport) }.to output(message).to_stdout
-    end
+      plane1.land(airport);
+      plane2.land(airport);
 
-    context 'plane is already landed' do
-      it 'won\'t allow plane to be landed again' do
-        airport = Airport.new
-        allow(airport).to receive(:rand).and_return(1)
-        subject.land(airport)
-        message = "PLANE ALREADY LANDED"
-        expect { subject.land(airport) }.to raise_error(message)
-      end
-    end
-  end
+      plane2.take_off(airport);
+      expect(airport.planes).toEqual([plane1]);
+    });
 
-  describe '#take_off' do
-    it 'instructs the plane to take off' do
-      airport = Airport.new
-      expect(subject).to receive(:take_off)
-      subject.take_off(airport)
-    end
+    it('won\'t allow a plane not at the specified airport to take off', function(){
+      spyOn(Math, "random").and.returnValue(2);
+      airport = new Airport;
+      airport2 = new Airport;
+      plane = new Plane;
+      plane2 = new Plane;
 
-    it 'removes the plane that has taken off from the planes array' do
-      airport = Airport.new
-      allow(airport).to receive(:rand).and_return(1)
-      subject.land(airport)
-      subject.take_off(airport)
-      expect(airport.planes).to eq []
-    end
+      plane.land(airport)
+      plane2.land(airport2)
 
-    it 'ensures the correct plane is taking off' do
-      airport = Airport.new
-      allow(airport).to receive(:rand).and_return(1)
+      message = "PLANE NOT AT AIRPORT"
+      expect(function() { plane.take_off(airport2) } ).toThrow(message);
+    });
 
-      plane1 = Plane.new
-      plane2 = Plane.new
+    it('won\'t allow a plane to land if the airport is full', function(){
+      spyOn(Math, "random").and.returnValue(2);
+      airport = new Airport(5); 
+      for(var i=0; i< 5; i++){
+        plane = new Plane;
+        plane.land(airport);
+      } 
+      plane = new Plane;
+      expect(function() { plane.land(airport) } ).toThrow("AIRPORT FULL");
+    });
 
-      plane1.land(airport)
-      plane2.land(airport)
-
-      plane2.take_off(airport)
-      expect(airport.planes).to eq [plane1]
-    end
-
-    it 'confirms to user that plane has taken off' do
-      airport = Airport.new
-      allow(airport).to receive(:rand).and_return(1)
-      subject.land(airport)
-      message = "PLANE TAKEN OFF SUCCESSFULLY\n"
-      expect { subject.take_off(airport) }.to output(message).to_stdout
-    end
-
-    context 'plane isn\'t in the specified airport' do
-      it 'won\'t allow a plane to take off' do
-        airport = Airport.new
-        allow(airport).to receive(:rand).and_return(1)
-        subject.land(airport)
-        message = "PLANE NOT AT AIRPORT"
-        expect { Plane.new.take_off(airport) }.to raise_error(message)
-      end
-    end
-  end
-
-  context 'airport full' do
-    it 'won\'t allow another plane to land' do
-      airport = Airport.new(5)
-      allow(airport).to receive(:rand).and_return(1)
-      expect { 6.times { Plane.new.land(airport) } }.to raise_error("AIRPORT FULL")
-    end
-  end
-
-  context 'airport empty' do
-    it 'won\'t allow planes to take off' do
-      airport = Airport.new
-      allow(airport).to receive(:rand).and_return(1)
-      expect { subject.take_off(airport) }.to raise_error("AIRPORT EMPTY")
-    end
-  end
-end
+    it('won\'t allow a plane to take off if the airport is empty', function(){
+      spyOn(Math, "random").and.returnValue(2);
+      airport = new Airport
+      plane = new Plane
+      expect(function() { plane.take_off(airport) } ).toThrow("AIRPORT EMPTY");
+    });
+  });
+});

@@ -2,8 +2,7 @@ class Airport{
   constructor(capacity = 100){
     this.planes = [];
     this.capacity = capacity;
-    // this.weather = weather;
+    this.weather = new Weather;
   }
 }
 
-// weather = new Weather

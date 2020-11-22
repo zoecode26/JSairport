@@ -1,11 +1,13 @@
 class Weather{
+
   forecast(){
-    randValue = Math.floor(Math.random() * 10);
+    var randValue = Math.floor(Math.random());
+    console.log(randValue)
     if (randValue > 6){
       return "stormy"; 
     }
     else{
-      return "sunny";
+      return "sunny"; 
     }
   }
 }
